@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Level : MonoBehaviour
 {
+    public GameObject[] blocks;
 
     private Grid2D grid;
 
@@ -41,7 +42,7 @@ public class Level : MonoBehaviour
     void Start()
     {
         grid = new Grid2D(10, 20);
-        StartCoroutine("FillGrid");
+        Instantiate(blocks[0]).GetComponent<PlayerBlock>().levelGrid = grid;
     }
 
     // Update is called once per frame
