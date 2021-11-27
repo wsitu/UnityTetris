@@ -34,6 +34,18 @@ public class Grid2D
         return this[xIndex, yIndex] != null;
     }
 
+    public bool IsEmpty(int xIndex, int yIndex)
+    {
+        return this[xIndex, yIndex] == null;
+    }
+
+    public void Swap(int firstX, int firstY, int secondX, int secondY)
+    {
+        GameObject temp = this[secondX, secondY];
+        this[secondX, secondY] = this[firstX, firstY];
+        this[firstX, firstY] = temp;
+    }
+
     public int XLength
     {
         get => this.grid.GetLength(0);

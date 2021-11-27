@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 847257742910697472}
   - component: {fileID: 7079663601041862422}
   - component: {fileID: 1046757782249541960}
+  - component: {fileID: -2718832313588709287}
   m_Layer: 0
   m_Name: BaseBrick
   m_TagString: Untagged
@@ -81,3 +82,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-2718832313588709287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1507903898437375067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d403484037c1334a9f49e1717011ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

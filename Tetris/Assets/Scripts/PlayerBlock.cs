@@ -14,6 +14,14 @@ public class PlayerBlock : MonoBehaviour
 
     private List<GameObject> bricks = new List<GameObject>();
 
+    public void Translate(int xAmount, int yAmount)
+    {
+        foreach (GameObject brick in bricks)
+        {
+            brick.GetComponent<MoveableBrick>().Translate(xAmount, yAmount);
+        }
+    }
+
     void Start()
     {
         moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
@@ -30,6 +38,10 @@ public class PlayerBlock : MonoBehaviour
                 bricks.Add(brick);
                 brick.GetComponent<Renderer>().material.color = blockColor;
                 moveGrid[x, y] = brick;
+                MoveableBrick setup = brick.GetComponent<MoveableBrick>();
+                setup.grid = moveGrid;
+                setup.x = x;
+                setup.y = y;
             }
         }
     }
