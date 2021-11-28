@@ -13,19 +13,59 @@ public class PlayerBlock : MonoBehaviour
     public Grid2D moveGrid;
 
     private List<GameObject> bricks = new List<GameObject>();
+    private float moveCooldown = 0.15f;
+    private bool canDown;
+    private bool canLeft;
+    private bool canRight;
+    private int _x;
+    private int _y;
+    private int _length = 0;
 
-    public void Translate(int xAmount, int yAmount)
+    public int x
     {
-        foreach (GameObject brick in bricks)
+        get => _x;
+        set
         {
-            brick.GetComponent<MoveableBrick>().Translate(xAmount, yAmount);
+            int diff = value - _x;
+            foreach (GameObject brick in bricks)
+                brick.GetComponent<MoveableBrick>().Translate(diff, 0);
+            _x = value;
         }
     }
 
-    void Start()
+    public int y
     {
-        moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
+        get => _y;
+        set
+        {
+            int diff = value - y;
+            foreach (GameObject brick in bricks)
+                brick.GetComponent<MoveableBrick>().Translate(0, diff);
+            _y = value;
+        }
+    }
 
+    public int length
+    {
+        get => _length;
+    }
+
+    public bool CanMove(int toX, int toY)
+    {
+        int xDiff = toX - x;
+        int yDiff = toY - y;
+        foreach (GameObject brick in bricks)
+        {
+            MoveableBrick info = brick.GetComponent<MoveableBrick>();
+            if (!moveGrid.IsValid(info.x + xDiff, info.y + yDiff))
+                return false;
+        }
+
+        return true;
+    }
+
+    void Spawn(int xPosition = 0, int yPosition = 0)
+    {
         GameObject[][] layout = new GameObject[2][];
         layout[1] = topRow;
         layout[0] = bottomRow;
@@ -42,12 +82,89 @@ public class PlayerBlock : MonoBehaviour
                 setup.grid = moveGrid;
                 setup.x = x;
                 setup.y = y;
+                if (_length < x + 1) _length = x + 1;
+                if (_length < y + 1) _length = y + 1;
             }
         }
+        _x = 0;
+        _y = 0 + (layout.GetLength(0) - length); //position layout at top
+        x = xPosition;
+        y = yPosition;
+    }
+
+    IEnumerator DownCooldown()
+    {
+        canDown = false;
+        yield return new WaitForSeconds(moveCooldown);
+        canDown = true;
+    }
+    IEnumerator LeftCooldown()
+    {
+        canLeft = false;
+        yield return new WaitForSeconds(moveCooldown);
+        canLeft = true;
+    }
+    IEnumerator RightCooldown()
+    {
+        canRight = false;
+        yield return new WaitForSeconds(moveCooldown);
+        canRight = true;
+    }
+
+    void Start()
+    {
+        moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
+        Spawn();
     }
 
     void Update()
     {
-        
+        if (Input.GetButtonDown("Vertical") && Input.GetAxis("Vertical") > 0)
+        {
+            //rotate
+            y = moveGrid.YLength - length;
+        }
+        if (Input.GetAxis("Vertical") < 0)
+        {
+            if (Input.GetButtonDown("Vertical"))
+                canDown = true;
+            if (canDown && Input.GetButton("Vertical"))
+            {
+                if (CanMove(x, y - 1))
+                {
+                    y--;
+                    StartCoroutine("DownCooldown");
+                }
+
+            }
+        }
+        if (Input.GetAxis("Horizontal") > 0)
+        {
+            if (Input.GetButtonDown("Horizontal"))
+                canRight = true;
+            if (canRight && Input.GetButton("Horizontal"))
+            {
+                if (CanMove(x + 1, y))
+                {
+                    x++;
+                    StartCoroutine("RightCooldown");
+                }
+
+            }
+        }
+        if (Input.GetAxis("Horizontal") < 0)
+        {
+            if (Input.GetButtonDown("Horizontal"))
+                canLeft = true;
+            if (canLeft && Input.GetButton("Horizontal"))
+            {
+                if (CanMove(x - 1, y))
+                {
+                    x--;
+                    StartCoroutine("LeftCooldown");
+                }
+
+            }
+        }
     }
 }

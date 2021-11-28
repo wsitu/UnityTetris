@@ -13,7 +13,10 @@ public class MoveableBrick : MonoBehaviour
     {
         grid[newX, newY] = gameObject;
         if (grid[x, y] == gameObject)
-            grid[x, y] = null;
+        {
+            if (x != newX || y != newY)
+                grid[x, y] = null;
+        }
         x = newX;
         y = newY;
     }

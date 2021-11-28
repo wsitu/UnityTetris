@@ -39,6 +39,15 @@ public class Grid2D
         return this[xIndex, yIndex] == null;
     }
 
+    public bool IsValid(int xIndex, int yIndex)
+    {
+        if (xIndex < 0 || yIndex < 0)
+            return false;
+        if (xIndex >= XLength || yIndex >= YLength)
+            return false;
+        return true;
+    }
+
     public void Swap(int firstX, int firstY, int secondX, int secondY)
     {
         GameObject temp = this[secondX, secondY];
