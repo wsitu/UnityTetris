@@ -7,47 +7,28 @@ public class Level : MonoBehaviour
     public GameObject[] blocks;
 
     private Grid2D grid;
+    private PlayerBlock currentBlock;
 
-    // Test basic grid
-    IEnumerator FillGrid ()
+    void RandomBlock()
     {
-        GameObject test = GameObject.Find("TestBlock");
-        for (int i = 0; i < grid.XLength; i++)
-        {
-            for (int j = 0; j < grid.YLength; j++)
-            {
-                grid[i, j] = Instantiate(test);
-                yield return new WaitForSeconds(0.050f);
-            }
-        }
-        StartCoroutine("EmptyGrid");
-    }
-
-    IEnumerator EmptyGrid()
-    {
-        for (int i = 0; i < grid.XLength; i++)
-        {
-            for (int j = 0; j < grid.YLength; j++)
-            {
-                if (grid.Has(i, j))
-                {
-                    grid.Delete(i,j);
-                }
-                yield return new WaitForSeconds(0.025f);
-            }
-        }
+        GameObject chosen = blocks[Random.Range(0, blocks.Length)];
+        PlayerBlock player = Instantiate(chosen).GetComponent<PlayerBlock>();
+        player.levelGrid = grid;
+        player.Spawn(0, 0);
+        player.x = (int)(grid.XLength / 2 - player.length / 2);
+        player.y = (int)grid.YLength - player.length;
+        currentBlock = player;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         grid = new Grid2D(10, 20);
-        Instantiate(blocks[0]).GetComponent<PlayerBlock>().levelGrid = grid;
+        RandomBlock();
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 }

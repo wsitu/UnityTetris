@@ -66,6 +66,17 @@ public class PlayerBlock : MonoBehaviour
         return true;
     }
 
+    public void PlaceDown()
+    {
+        foreach (GameObject brick in bricks)
+        {
+            MoveableBrick info = brick.GetComponent<MoveableBrick>();
+            levelGrid[info.x, info.y] = brick;
+            Destroy(gameObject);
+        }
+
+    }
+
     public void Rotate()
     {
         void RotateBorderClockWise(int xStart, int yStart, int borderLength)
@@ -106,8 +117,9 @@ public class PlayerBlock : MonoBehaviour
             Rotate();
     }
 
-    void Spawn(int xPosition = 0, int yPosition = 0)
+    public void Spawn(int xPosition = 0, int yPosition = 0)
     {
+        moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
         GameObject[][] layout = new GameObject[2][];
         layout[1] = topRow;
         layout[0] = bottomRow;
@@ -168,8 +180,6 @@ public class PlayerBlock : MonoBehaviour
 
     void Start()
     {
-        moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
-        Spawn();
     }
 
     void Update()
