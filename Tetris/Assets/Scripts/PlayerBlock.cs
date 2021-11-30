@@ -59,9 +59,51 @@ public class PlayerBlock : MonoBehaviour
             MoveableBrick info = brick.GetComponent<MoveableBrick>();
             if (!moveGrid.IsValid(info.x + xDiff, info.y + yDiff))
                 return false;
+            if (levelGrid.Has(info.x + xDiff, info.y + yDiff))
+                return false;
         }
 
         return true;
+    }
+
+    public void Rotate()
+    {
+        void RotateBorderClockWise(int xStart, int yStart, int borderLength)
+        {
+            int toEdge = borderLength - 1;
+            for (int i = 0; i < toEdge; i++)
+            {
+                Swap(xStart + i, yStart, xStart, yStart + toEdge - i);
+                Swap(xStart + i, yStart, xStart + toEdge - i, yStart + toEdge);
+                Swap(xStart + i, yStart, xStart + toEdge, yStart + i);
+            }
+        }
+        for(int layer = 0; layer < (int) length/2; layer++)
+            RotateBorderClockWise(x + layer, y + layer, length - layer * 2);
+    }
+
+    public void SafeRotate()
+    {
+        if (x < 0)
+            x = 0;
+        else if (x + length > moveGrid.XLength)
+            x = moveGrid.XLength - length;
+        if (y < 0)
+            y = 0;
+        else if (y + length > moveGrid.YLength)
+            y = moveGrid.YLength - length;
+        Rotate();
+        for (int i = 0; i < (int)length/2; i++)
+        {
+            if(CanMove(x, y + i))
+            {
+                y = y + i;
+                return;
+            }
+        }
+        // Rotate back to original 
+        for (int i = 0; i < 3; i++)
+            Rotate();
     }
 
     void Spawn(int xPosition = 0, int yPosition = 0)
@@ -90,6 +132,19 @@ public class PlayerBlock : MonoBehaviour
         _y = 0 + (layout.GetLength(0) - length); //position layout at top
         x = xPosition;
         y = yPosition;
+    }
+
+    public void Swap(int firstX, int firstY, int secondX, int secondY)
+    {
+        GameObject temp = moveGrid[firstX, firstY];
+        if(temp == null)
+        {
+            temp = moveGrid[secondX, secondY];
+            if (temp != null)
+                temp.GetComponent<MoveableBrick>().Swap(firstX, firstY);
+        }
+        else
+            temp.GetComponent<MoveableBrick>().Swap(secondX, secondY);
     }
 
     IEnumerator DownCooldown()
@@ -121,8 +176,7 @@ public class PlayerBlock : MonoBehaviour
     {
         if (Input.GetButtonDown("Vertical") && Input.GetAxis("Vertical") > 0)
         {
-            //rotate
-            y = moveGrid.YLength - length;
+            SafeRotate();
         }
         if (Input.GetAxis("Vertical") < 0)
         {
