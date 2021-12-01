@@ -9,6 +9,7 @@ public class PlayerBlock : MonoBehaviour
     public GameObject[] topRow = new GameObject[4];
     public GameObject[] bottomRow = new GameObject[4];
 
+    public Level level;
     public Grid2D levelGrid;
     public Grid2D moveGrid;
 
@@ -74,7 +75,7 @@ public class PlayerBlock : MonoBehaviour
             levelGrid[info.x, info.y] = brick;
             Destroy(gameObject);
         }
-
+        level.ClearLines();
     }
 
     public void Rotate()
