@@ -8,6 +8,31 @@ public class Level : MonoBehaviour
 
     private Grid2D grid;
     private PlayerBlock currentBlock;
+    private float moveSpeed = 1.0f;
+
+    IEnumerator PlacePlayer()
+    {
+        bool failedMove = false;
+        while (currentBlock != null)
+        {
+            yield return new WaitForSeconds(moveSpeed);
+            if (failedMove)
+            {
+                currentBlock.PlaceDown();
+                currentBlock = null;
+                failedMove = false;
+            }
+            else if (currentBlock.CanMove(currentBlock.x, currentBlock.y - 1))
+            {
+                currentBlock.y--;
+                failedMove = false;
+            }
+            else
+            {
+                failedMove = true;
+            }
+        }
+    }
 
     void RandomBlock()
     {
@@ -24,11 +49,15 @@ public class Level : MonoBehaviour
     void Start()
     {
         grid = new Grid2D(10, 20);
-        RandomBlock();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(currentBlock == null)
+        {
+            RandomBlock();
+            StartCoroutine("PlacePlayer");
+        }
     }
 }
