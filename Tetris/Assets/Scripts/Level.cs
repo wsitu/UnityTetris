@@ -10,6 +10,7 @@ public class Level : MonoBehaviour
     private PlayerBlock currentBlock;
     private float moveSpeed = 1.0f;
     private int score = 0;
+    private int lastBlock = -1;
 
     public void ClearLines()
     {
@@ -73,7 +74,12 @@ public class Level : MonoBehaviour
 
     void RandomBlock()
     {
-        GameObject chosen = blocks[Random.Range(0, blocks.Length)];
+
+        int randomSize = (lastBlock < 0) ? blocks.Length : blocks.Length - 1;
+        int notLastBlock = Random.Range(0, randomSize);
+        if (notLastBlock >= lastBlock) notLastBlock++;
+        lastBlock = notLastBlock;
+        GameObject chosen = blocks[notLastBlock];
         PlayerBlock player = Instantiate(chosen).GetComponent<PlayerBlock>();
         player.level = this;
         player.levelGrid = grid;
