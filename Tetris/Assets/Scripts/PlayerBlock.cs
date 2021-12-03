@@ -185,6 +185,12 @@ public class PlayerBlock : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            while (CanMove(x, y - 1))
+                y--;
+            PlaceDown();
+        }
         if (Input.GetButtonDown("Vertical") && Input.GetAxis("Vertical") > 0)
         {
             SafeRotate();

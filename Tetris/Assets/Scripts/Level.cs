@@ -51,9 +51,11 @@ public class Level : MonoBehaviour
     IEnumerator PlacePlayer()
     {
         bool failedMove = false;
-        while (currentBlock != null)
+        while (true)
         {
             yield return new WaitForSeconds(moveSpeed);
+            if (currentBlock == null)
+                continue;
             if (failedMove)
             {
                 currentBlock.PlaceDown();
@@ -93,6 +95,7 @@ public class Level : MonoBehaviour
     void Start()
     {
         grid = new Grid2D(10, 20);
+        StartCoroutine("PlacePlayer");
     }
 
     // Update is called once per frame
@@ -101,7 +104,6 @@ public class Level : MonoBehaviour
         if(currentBlock == null)
         {
             RandomBlock();
-            StartCoroutine("PlacePlayer");
         }
     }
 }
