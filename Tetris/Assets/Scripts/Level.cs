@@ -76,10 +76,9 @@ public class Level : MonoBehaviour
 
     void RandomBlock()
     {
-
-        int randomSize = (lastBlock < 0) ? blocks.Length : blocks.Length - 1;
-        int notLastBlock = Random.Range(0, randomSize);
-        if (notLastBlock >= lastBlock) notLastBlock++;
+        int adjustLength = (lastBlock < 0) ? 0 : 1;
+        int notLastBlock = Random.Range(adjustLength, blocks.Length);
+        if (notLastBlock <= lastBlock) notLastBlock--;
         lastBlock = notLastBlock;
         GameObject chosen = blocks[notLastBlock];
         PlayerBlock player = Instantiate(chosen).GetComponent<PlayerBlock>();
