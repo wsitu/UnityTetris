@@ -11,6 +11,8 @@ public class Level : MonoBehaviour
     private float moveSpeed = 1.0f;
     private int score = 0;
     private int lastBlock = -1;
+    private bool canSpawn = true;
+    private bool[] markedLines;
 
     public void ClearLines()
     {
@@ -21,31 +23,25 @@ public class Level : MonoBehaviour
                     return false;
             return true;
         }
-        void ClearLine(int y)
+        void MarkLine(int y)
         {
+            Color darkGray = new Color(0.25f, 0.25f, 0.25f, 1f);
             for (int x = 0; x < grid.XLength; x++)
-                grid.Delete(x, y);
-        }
-        void DropLine(int y, int amount)
-        {
-            if (amount < 1) return; 
-            for (int x = 0; x < grid.XLength; x++)
-                grid.Swap(x, y, x, y - 1);
+                grid[x, y].GetComponent<Renderer>().material.color = darkGray;
         }
 
-        int cleared = 0;
         for(int row = 0; row < grid.YLength; row++)
         {
             if (HasFullLine(row))
             {
-                ClearLine(row);
-                cleared++;
+                MarkLine(row);
+                markedLines[row] = true;
+                canSpawn = false;
             }
             else
-                DropLine(row, cleared);
+                markedLines[row] = false;
         }
-        score += cleared;
-        if (cleared > 4) score++;
+        StartCoroutine("RemoveMarkedLines");
     }
 
     IEnumerator PlacePlayer()
@@ -74,6 +70,37 @@ public class Level : MonoBehaviour
         }
     }
 
+    IEnumerator RemoveMarkedLines()
+    {
+        void DropLine(int y, int amount)
+        {
+            if (amount < 1) return;
+            for (int x = 0; x < grid.XLength; x++)
+                 grid.Swap(x, y, x, y - amount);
+        }
+        void RemoveLine(int y)
+        {
+            for (int x = 0; x < grid.XLength; x++)
+                grid.Delete(x, y);
+        }
+
+        yield return new WaitForSeconds(0.65f * moveSpeed);
+        int cleared = 0;
+        for (int y = 0; y < grid.YLength; y++)
+        {
+            if (markedLines[y])
+            {
+                RemoveLine(y);
+                cleared++;
+            }
+            else
+                DropLine(y, cleared);
+        }
+        score += cleared;
+        if (cleared > 4) score++;
+        canSpawn = true;
+    }
+
     void RandomBlock()
     {
         int adjustLength = (lastBlock < 0) ? 0 : 1;
@@ -94,13 +121,14 @@ public class Level : MonoBehaviour
     void Start()
     {
         grid = new Grid2D(10, 20);
+        markedLines = new bool[grid.YLength];
         StartCoroutine("PlacePlayer");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(currentBlock == null)
+        if(currentBlock == null && canSpawn)
         {
             RandomBlock();
         }
