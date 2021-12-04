@@ -14,6 +14,8 @@ public class PlayerBlock : MonoBehaviour
     public Grid2D moveGrid;
 
     private List<GameObject> bricks = new List<GameObject>();
+    private List<GameObject> guides = new List<GameObject>();
+    private Grid2D guideGrid;
     private float moveCooldown = 0.15f;
     private bool canDown;
     private bool canLeft;
@@ -71,6 +73,7 @@ public class PlayerBlock : MonoBehaviour
     {
         foreach (GameObject brick in bricks)
         {
+            foreach (GameObject g in guides) Destroy(g);
             MoveableBrick info = brick.GetComponent<MoveableBrick>();
             levelGrid[info.x, info.y] = brick;
             Destroy(gameObject);
@@ -121,6 +124,7 @@ public class PlayerBlock : MonoBehaviour
     public void Spawn(int xPosition = 0, int yPosition = 0)
     {
         moveGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
+        guideGrid = new Grid2D(levelGrid.XLength, levelGrid.YLength);
         GameObject[][] layout = new GameObject[2][];
         layout[1] = topRow;
         layout[0] = bottomRow;
@@ -139,6 +143,16 @@ public class PlayerBlock : MonoBehaviour
                 setup.y = y;
                 if (_length < x + 1) _length = x + 1;
                 if (_length < y + 1) _length = y + 1;
+
+                GameObject guideBrick = Instantiate(layout[y][x]);
+                guides.Add(guideBrick);
+                Color darkGray = new Color(0.1f, 0.1f, 0.1f, 1f);
+                guideBrick.GetComponent<Renderer>().material.color = darkGray;
+                guideGrid[x, y] = guideBrick;
+                setup = guideBrick.GetComponent<MoveableBrick>();
+                setup.grid = guideGrid;
+                setup.x = x;
+                setup.y = y;
             }
         }
         _x = 0;
@@ -185,10 +199,18 @@ public class PlayerBlock : MonoBehaviour
 
     void Update()
     {
+        int bottomDiff;
+        for (bottomDiff = 0; bottomDiff < moveGrid.YLength; bottomDiff++)
+            if (!CanMove(x, y - (bottomDiff + 1))) break;
+        for (int i = 0; i < bricks.Count; i++)
+        {
+            MoveableBrick original = bricks[i].GetComponent<MoveableBrick>();
+            MoveableBrick guide = guides[i].GetComponent<MoveableBrick>();
+            guide.Move(original.x, original.y - bottomDiff);
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            while (CanMove(x, y - 1))
-                y--;
+            y -= bottomDiff;
             PlaceDown();
         }
         if (Input.GetButtonDown("Vertical") && Input.GetAxis("Vertical") > 0)
