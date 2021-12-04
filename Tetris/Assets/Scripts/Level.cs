@@ -44,29 +44,39 @@ public class Level : MonoBehaviour
         StartCoroutine("RemoveMarkedLines");
     }
 
-    IEnumerator PlacePlayer()
+    IEnumerator MovePlayer()
     {
-        bool failedMove = false;
         while (true)
         {
             yield return new WaitForSeconds(moveSpeed);
-            if (currentBlock == null)
-                continue;
-            if (failedMove)
+            if (currentBlock == null) continue;
+            if (currentBlock.CanMove(currentBlock.x, currentBlock.y - 1))
+                    currentBlock.y--;
+        }
+    }
+
+    IEnumerator PlacePlayer()
+    {
+        int lastY = grid.YLength;
+        while (true)
+        {
+            yield return new WaitForSeconds(moveSpeed);
+            if (currentBlock == null) continue;
+            if (!currentBlock.CanMove(currentBlock.x, currentBlock.y - 1))
             {
-                currentBlock.PlaceDown();
-                currentBlock = null;
-                failedMove = false;
-            }
-            else if (currentBlock.CanMove(currentBlock.x, currentBlock.y - 1))
-            {
-                currentBlock.y--;
-                failedMove = false;
+                if (currentBlock.y >= lastY)
+                {
+                    currentBlock.PlaceDown();
+                    lastY = grid.YLength;
+                }
+                else
+                {
+                    lastY = currentBlock.y;
+                }
+
             }
             else
-            {
-                failedMove = true;
-            }
+                lastY = grid.YLength;
         }
     }
 
@@ -122,6 +132,7 @@ public class Level : MonoBehaviour
     {
         grid = new Grid2D(10, 20);
         markedLines = new bool[grid.YLength];
+        StartCoroutine("MovePlayer");
         StartCoroutine("PlacePlayer");
     }
 
