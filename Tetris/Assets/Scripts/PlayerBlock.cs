@@ -206,7 +206,14 @@ public class PlayerBlock : MonoBehaviour
         {
             MoveableBrick original = bricks[i].GetComponent<MoveableBrick>();
             MoveableBrick guide = guides[i].GetComponent<MoveableBrick>();
-            guide.Move(original.x, original.y - bottomDiff);
+
+            if (bottomDiff >= length)
+                guide.Move(original.x, original.y - bottomDiff);
+            else
+            {
+                Vector3 hide = new Vector3(0, -guideGrid.YLength, 0);
+                guide.gameObject.transform.position = hide;
+            }
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
