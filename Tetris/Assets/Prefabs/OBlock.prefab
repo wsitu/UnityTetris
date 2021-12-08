@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cf8f74737eea0746a8cb46ebb48ae23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockColor: {r: 1, g: 1, b: 0, a: 0}
+  blockColor: {r: 0.8, g: 0.8, b: 0.16, a: 0}
   topRow:
   - {fileID: 1507903898437375067, guid: eeca778f0f8349e49967c429f2caca59, type: 3}
   - {fileID: 1507903898437375067, guid: eeca778f0f8349e49967c429f2caca59, type: 3}
@@ -54,3 +54,4 @@ MonoBehaviour:
   - {fileID: 1507903898437375067, guid: eeca778f0f8349e49967c429f2caca59, type: 3}
   - {fileID: 0}
   - {fileID: 0}
+  level: {fileID: 0}
