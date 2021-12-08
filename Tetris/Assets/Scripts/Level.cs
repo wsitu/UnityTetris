@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Level : MonoBehaviour
 {
     public GameObject[] blocks;
+    public GameObject restartBlock;
     public GameObject scoreText;
 
     private Grid2D grid;
@@ -13,7 +14,9 @@ public class Level : MonoBehaviour
     private float moveSpeed = 1.0f;
     private int score = 0;
     private int lastBlock = -1;
+    private bool canRestart = false;
     private bool canSpawn = true;
+    private bool ending = false;
     private bool[] markedLines;
 
     public void ClearLines()
@@ -31,7 +34,7 @@ public class Level : MonoBehaviour
             for (int x = 0; x < grid.XLength; x++)
                 grid[x, y].GetComponent<Renderer>().material.color = darkGray;
         }
-
+        if (ending) return;
         for(int row = 0; row < grid.YLength; row++)
         {
             if (HasFullLine(row))
@@ -48,8 +51,17 @@ public class Level : MonoBehaviour
 
     IEnumerator GameOver()
     {
-        yield return new WaitForSeconds(1.0f);
-        Restart();
+        yield return new WaitForSeconds(2.0f);
+        ending = true;
+        for (int y = 0;  y < grid.YLength; y++)
+        {
+            for(int x = 0; x < grid.XLength; x++)
+            {
+                grid[x, y] = Instantiate(restartBlock);
+                yield return new WaitForSeconds(0.03f);
+            }
+        }
+        canRestart = true;
     }
 
     IEnumerator MovePlayer()
@@ -162,11 +174,13 @@ public class Level : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentBlock == null && canSpawn)
+        if(currentBlock == null && canSpawn && !ending)
         {
             RandomBlock();
             if (!currentBlock.CanMove(currentBlock.x, currentBlock.y))
                 StartCoroutine("GameOver");
         }
+        if (canRestart && Input.anyKey)
+            Restart();
     }
 }

@@ -397,6 +397,7 @@ MonoBehaviour:
   - {fileID: 2257118016740063648, guid: 4d66f8a07a4eb8440860ecdea8fd78d2, type: 3}
   - {fileID: 2257118016740063648, guid: ec69a7b4969b60743a84ec67c45c4c4f, type: 3}
   - {fileID: 2257118016740063648, guid: a00e2c1f9f2b1f84390fa6aa69297586, type: 3}
+  restartBlock: {fileID: 697360685037240609, guid: 47a843fa41cfde74a9c0d224b45f171d, type: 3}
   scoreText: {fileID: 1954058797}
 --- !u!4 &1741493110
 Transform:
