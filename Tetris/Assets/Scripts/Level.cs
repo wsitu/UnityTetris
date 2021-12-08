@@ -18,6 +18,7 @@ public class Level : MonoBehaviour
     private bool canSpawn = true;
     private bool ending = false;
     private bool[] markedLines;
+    private System.Random randomer = new System.Random();
 
     public void ClearLines()
     {
@@ -144,7 +145,7 @@ public class Level : MonoBehaviour
     void RandomBlock()
     {
         int adjustLength = (lastBlock < 0) ? 0 : 1;
-        int notLastBlock = Random.Range(adjustLength, blocks.Length);
+        int notLastBlock = randomer.Next(adjustLength, blocks.Length);
         if (notLastBlock <= lastBlock) notLastBlock--;
         lastBlock = notLastBlock;
         GameObject chosen = blocks[notLastBlock];
