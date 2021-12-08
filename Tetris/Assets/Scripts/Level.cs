@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Level : MonoBehaviour
 {
     public GameObject[] blocks;
+    public GameObject scoreText;
 
     private Grid2D grid;
     private PlayerBlock currentBlock;
@@ -113,8 +114,18 @@ public class Level : MonoBehaviour
             else
                 DropLine(y, cleared);
         }
-        score += cleared;
-        if (cleared > 4) score++;
+        int points = (cleared > 3) ? cleared + 1: cleared;
+        if (scoreText && points > 0)
+        {
+            TextMesh textField = scoreText.GetComponent<TextMesh>();
+            textField.text = score.ToString();
+            for(int i = 0; i <= points; i++)
+            {
+                textField.text = (score+i).ToString();
+                yield return new WaitForSeconds(0.1f);
+            }
+        }
+        score += points;
         canSpawn = true;
     }
 
