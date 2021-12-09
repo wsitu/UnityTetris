@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -69,7 +70,8 @@ public class Level : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(moveSpeed);
+            float speedMultiplier = Math.Min(1 + score / 8, 16);
+            yield return new WaitForSeconds(moveSpeed/speedMultiplier);
             if (currentBlock == null) continue;
             if (currentBlock.CanMove(currentBlock.x, currentBlock.y - 1))
                     currentBlock.y--;
